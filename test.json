@@ -1,0 +1,25 @@
+{  
+   "data":{  
+      "type":"contacts",
+      "attributes":{  
+         "firstName":"k123Jerry",
+         "lastName":"k123Coleman",
+         "primaryPhone":"585-255-1127",
+         "primaryEmail":"123JerryAColeman@armyspy.com"
+      },
+      "relationships":{  
+         "owner":{  
+            "data":{  
+               "type":"users",
+               "id":"1"
+            }
+         },
+         "organization":{  
+            "data":{  
+               "type":"organizations",
+               "id":"1"
+            }
+         }
+      }
+   }
+}

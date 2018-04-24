@@ -1,0 +1,12 @@
+ 
+parameters:    
+    aakron.crm.username: "admin"
+    aakron.crm.userapikey: "4d0701b23795de2cd493e746623f1c6a7e999881"
+    contacts.source.url: "http://localhost/aakron-csc-api/web/app_dev.php/contact?_format=json"
+    contacts.destination.url: "http://orocrm.example.com/Aakron/orocrm/aakroncrm/web/app_dev.php/api/contacts"
+     
+services:
+    aakron_import_contact_api:
+        class: 'Aakron\Bundle\CscApiBundle\Manager\ContactSyncManager'
+        arguments: ["@kernel","%contacts.destination.url%","%contacts.source.url%","%aakron.crm.username%","%aakron.crm.userapikey%"] 
+

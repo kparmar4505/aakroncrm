@@ -1,0 +1,8 @@
+.buildpath
+.project
+.settings/
+composer.lock
+app/cache
+app/logs
+vendor/
+web/bundles/

@@ -1,7 +1,7 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
-
+    - { resource: service_config.yml }
 framework:
     #esi:             ~
     translator:      { fallback: en }
@@ -96,7 +96,6 @@ services:
          class: Twig_Extensions_Extension_Intl
          tags:
              - { name: twig.extension }
-
 escape_wsse_authentication:
     authentication_provider_class: Oro\Bundle\UserBundle\Security\WsseAuthProvider
 
@@ -156,3 +155,15 @@ oro_message_queue:
         default: '%message_queue_transport%'
         '%message_queue_transport%': '%message_queue_transport_config%'
     client: ~
+    
+parameters:    
+    api_caller.options:
+    timeout: 10  # maximum transport + execution duration of the call in sec.
+    ssl_verifypeer: false  # to stop cURL from verifying the peer's certificate.
+    ssl_verifyhost: false
+    useragent: "OB API Caller"  # contents of the "User-Agent: " header.
+    followlocation: true  # to follow any "Location: " header that the server sends.
+    sslversion: 3  # set to 3 to avoid any bugs that relate to automatic version selection.
+    fresh_connect: false  # set to true to force full reconnect every call.
+#    api.base_url: "http://localhost/aakron-ups-api/web/app_dev.php/api/"
+    api.default_version: v1       
