@@ -121,7 +121,7 @@ oro_distribution:
 oro_ui:
     settings:
         organization_name:
-            value:            "OroCRM"
+            value:            "AakronCRM"
 
 oro_require_js:
     config:
