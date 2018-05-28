@@ -1,0 +1,1 @@
+["A new entity was found through the relationship 'Oro\\Bundle\\ContactBundle\\Entity\\ContactAddress#region' that was not configured to cascade persist operations for entity: . To solve this issue: Either explicitly call EntityManager#persist() on this unknown entity or configure cascade persist  this association in the mapping for example @ManyToOne(..,cascade={\"persist\"})."]
