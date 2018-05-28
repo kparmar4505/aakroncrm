@@ -1,9 +1,7 @@
 <?php
-
-/**
- * @author software
- *
- */
+/** 
+ * @author software 
+ **/
 namespace Aakron\Bundle\CscApiBundle\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
@@ -48,33 +46,47 @@ class AakronApiCommand extends ContainerAwareCommand implements CronCommandInter
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-      
-//            
+        $importApiManager = $this->getContainer()->get('aakron_import_contact_api');  
+        $apiCallerManager = $this->getContainer()->get('api_caller');  
             
         //$crmParameters= array();
-        $responseData = $this->getContainer()->get('api_caller')->call(new HttpGetJson($this->getContainer()->get('aakron_import_contact_api')->getSourceApi(),array()));
+        $responseData = $apiCallerManager->call(new HttpGetJson($importApiManager->getSourceApi(),array()));
         $progressBar = new ProgressBar($output, count($responseData));
         $progressBar->start();
       //  $progressBar->setRedrawFrequency(10);
-        
+       // print_r($responseData);exit;
         $responseArray=array();
+        $accountData=array();
+        $i = 0;
         foreach($responseData as $key=>$contactData)
         {
+//             if($i==5)
+//             {
+//                 continue ;
+//               //  print_r($accountData);exit;
+//             }
             $contactData1 = (Array)$contactData;
-            if($this->getContainer()->get('aakron_import_contact_api')->validateCscData($contactData1))
+            if($importApiManager->validateCscData($contactData1))
             {
-                $checkDuplicate = $this->getContainer()->get('aakron_import_contact_api')->checkDuplicateRecord($contactData1);
+                $checkDuplicate = $importApiManager->checkDuplicateRecord($contactData1);
                 
                 if($checkDuplicate<=0)
                 {
-                    $tempArray = $this->getContainer()->get('aakron_import_contact_api')->getAddContactArray();
+                    $tempArray = $importApiManager->getAddContactArray();
                 }
                 else {
-                    $tempArray = $this->getContainer()->get('aakron_import_contact_api')->getUpdateContactArray();
+                    $tempArray = $importApiManager->getUpdateContactArray();
                     $tempArray["data"]["id"] = $checkDuplicate;
                 }
                 
-                $contactData1 = $this->getContainer()->get('aakron_import_contact_api')->updateSocialForContact($contactData1);
+                $contactData2 = $importApiManager->updateSocialForContact($contactData1);
+                $contactData3 = $importApiManager->extractAccountData($contactData2);
+                $contactData1 = $contactData3["contact"];
+                if(key_exists("account", $contactData3))
+                {
+                    $accountData[$contactData3["account"]["account_number"]]["accountName"] = $contactData3["account"]["account_name"];
+                }
+                
                 $tempArray['data']['attributes'] = $contactData1;
                 $tempArray['data']['attributes']['primaryEmail'] =  $contactData1['emails'];
                 $tempArray['data']['attributes']['primaryPhone'] =   $contactData1['phones'];
@@ -84,26 +96,55 @@ class AakronApiCommand extends ContainerAwareCommand implements CronCommandInter
                 
                 
                 
-                /*********Update on CRM *******/
-                $options = $this->getContainer()->get('aakron_import_contact_api')->generatAuthentication();
-                $responseArray[] = $this->getContainer()->get('api_caller')->call(new HttpPostJsonBody($this->getContainer()->get('aakron_import_contact_api')->getDestinationApi(), $tempArray, false,$options));
-                /*****************/
+                /*********Add/Update contact on CRM *******/
+                $options = $importApiManager->generatAuthentication();
+                $responseData = $apiCallerManager->call(new HttpPostJsonBody($importApiManager->getDestinationApi(), $tempArray, false,$options));
+                $responseArray[] = $responseData;
+                /*********Add/Update contact on CRM *******/
                 
-                
-                // print_r($tempArray);exit;
+                /*********accounts on CRM *******/
+                if(key_exists("account", $contactData3))
+                {
+                    if(empty($accountData[$contactData3["account"]["account_number"]]["accountName"]))
+                    {
+                        $accountData[$contactData3["account"]["account_number"]]["accountName"] = $contactData3["account"]["account_name"];
+                    }
+                    $accountData[$contactData3["account"]["account_number"]]["contacts"][] = array ("type" => "contacts","id" => $responseData->data->id);    
+                }
+                /*********accounts on CRM *******/
+                $i++;
                 unset($tempArray);
             }
             else {
                // $this->unValidatedContacts[$key] = $contactData1;
             }
+            
+        
             $progressBar->advance();
-            // print_r($contactData1);exit;
+            
             unset($contactData1);
         }
         
-     //   return $crmParameters;
-        
-        
+        $responseAccountData=array();
+        /*********Add/Update accounts on CRM *******/
+        if(count($accountData)>0)
+        {
+            foreach($accountData as $accountId=>$accountData)
+            {
+                $optionsForAccount = $importApiManager->generatAuthentication();
+                $postArray = $importApiManager->getAddAccountArray();
+                $postArray["data"]["attributes"]["name"]=$accountData["accountName"];
+                $defaultContactData = $accountData["contacts"][0];
+                
+                $postArray["data"]["relationships"]["contacts"]["data"]=$accountData["contacts"];
+                $postArray["data"]["relationships"]["defaultContact"]["data"]=$defaultContactData;
+                
+                $responseAccountData = $apiCallerManager->call(new HttpPostJsonBody($this->getContainer()->getParameter("accounts.destination.url"), $postArray, false,$optionsForAccount));
+            }
+        }
+         //  print_r($responseAccountData );exit;
+        /*********Add/Update accounts on CRM *******/
+     
         // ensures that the progress bar is at 100%
         $progressBar->finish();
         $output->write("Import done");

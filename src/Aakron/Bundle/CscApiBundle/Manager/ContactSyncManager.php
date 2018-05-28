@@ -38,10 +38,82 @@ class ContactSyncManager
         $addContactArray["data"]["type"]="contacts";
         $addContactArray["data"]["attributes"]=array();
         $addContactArray["data"]["relationships"]["owner"]["data"]["type"]="users";
-        $addContactArray["data"]["relationships"]["owner"]["data"]["id"]="1";
+        $addContactArray["data"]["relationships"]["owner"]["data"]["id"]="1"; //If user need to change the change user id
         $addContactArray["data"]["relationships"]["organization"]["data"]["type"]="organizations";
-        $addContactArray["data"]["relationships"]["organization"]["data"]["id"]="1";
+        $addContactArray["data"]["relationships"]["organization"]["data"]["id"]="1"; //it should be 1 always because we have only one organization
         return $addContactArray;
+    }
+    public function getAddAccountArray()
+    {
+        $addContactArray["data"]["type"]="accounts";
+        $addContactArray["data"]["attributes"]["extend_description"]="null";
+        $addContactArray["data"]["attributes"]["name"]=""; //Dynamically update contact name
+        $addContactArray["data"]["relationships"]["owner"]["data"]["type"]="users"; 
+        $addContactArray["data"]["relationships"]["owner"]["data"]["id"]="1";//If user need to change the change user id
+        $addContactArray["data"]["relationships"]["contacts"]["data"]=array();   //Dynamically push array of contact
+        $addContactArray["data"]["relationships"]["defaultContact"]["data"]=array(); //Dynamically push array of default contact
+        $addContactArray["data"]["relationships"]["organization"]["data"]["type"]="organizations";
+        $addContactArray["data"]["relationships"]["organization"]["data"]["id"]="1"; //it should be 1 always because we have only one organization
+        return $addContactArray;
+//         array (
+//             'data' =>
+//             array (
+//                 'type' => 'accounts',
+//                 'attributes' =>
+//                 array (
+//                     'extend_description' => NULL,
+//                     'name' => 'Gartner management group',
+//                 ),
+//                 'relationships' =>
+//                 array (
+//                     'owner' =>
+//                     array (
+//                         'data' =>
+//                         array (
+//                             'type' => 'users',
+//                             'id' => '44',
+//                         ),
+//                     ),
+//                     'contacts' =>
+//                     array (
+//                         'data' =>
+//                         array (
+//                             0 =>
+//                             array (
+//                                 'type' => 'contacts',
+//                                 'id' => '1',
+//                             ),
+//                             1 =>
+//                             array (
+//                                 'type' => 'contacts',
+//                                 'id' => '3',
+//                             ),
+//                             2 =>
+//                             array (
+//                                 'type' => 'contacts',
+//                                 'id' => '22',
+//                             ),
+//                         ),
+//                     ),
+//                     'defaultContact' =>
+//                     array (
+//                         'data' =>
+//                         array (
+//                             'type' => 'contacts',
+//                             'id' => '1',
+//                         ),
+//                     ),
+//                     'organization' =>
+//                     array (
+//                         'data' =>
+//                         array (
+//                             'type' => 'organizations',
+//                             'id' => '1',
+//                         ),
+//                     ),
+//                 ),
+//             ),
+//         )
     }
     public function getUpdateContactArray()
     {
@@ -178,5 +250,25 @@ class ContactSyncManager
             $record = (Array)$responseData["data"]["0"];
             return $record["id"];
         }
+    }
+    public function extractAccountData($contactData)
+    {
+       // $this->container->get('api_caller')->call(new HttpPostJsonBody($this->destinationApiUrl, $contactRequest, false,$options));
+       $responseArray = array();
+       foreach($contactData as $key=>$value)
+       {
+           if(isset($contactData["account"]) && isset($contactData["accountName"]))
+           {
+               $responseArray["account"]["account_number"]=$contactData["account"];
+               $responseArray["account"]["account_name"]=$contactData["accountName"];
+               
+               unset($contactData["account"]);
+               unset($contactData["accountName"]);
+           }
+           
+       }
+       $responseArray["contact"]=$contactData;
+       
+       return $responseArray;
     }
 }
