@@ -2,6 +2,7 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: service_config.yml }
+    - { resource: "@AakronLeadBundle/Resources/config/services.yml" }
 framework:
     #esi:             ~
     translator:      { fallback: en }
@@ -153,7 +154,8 @@ oro_message_queue:
         default: '%message_queue_transport%'
         '%message_queue_transport%': '%message_queue_transport_config%'
     client: ~
-    
+genemu_form:
+    select2: ~    
 parameters:    
     api_caller.options:
     timeout: 10  # maximum transport + execution duration of the call in sec.

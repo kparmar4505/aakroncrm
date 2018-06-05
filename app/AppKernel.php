@@ -12,6 +12,7 @@ class AppKernel extends OroKernel
         //bundles,
             new Aakron\Bundle\CscApiBundle\AakronCscApiBundle(),
             new Lsw\ApiCallerBundle\LswApiCallerBundle(),
+            new Aakron\Bundle\LeadBundle\AakronLeadBundle(),
         );
 
         if ('dev' === $this->getEnvironment()) {

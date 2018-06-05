@@ -1,0 +1,19 @@
+datagrids: 
+    app-recent-tasks-grid:
+        extends: widget-base-tasks-grid
+        extended_entity_name: "%oro_task.entity.class%"
+        acl_resource: oro_task_view
+        filters: ~
+        inline_editing:
+            enable: false 
+        actions: ~           
+        sorters:
+            default:
+                dueDate: ASC
+        options:
+            entityHint: tasks
+            entity_pagination: true
+            toolbarOptions:
+                pageSize:
+                    default_per_page: 10
+            routerEnabled: false            

@@ -1,0 +1,9 @@
+dashboards: 
+    widgets:
+        recent_tasks:
+            label: My Tasks
+            route: oro_dashboard_widget
+            route_parameters:
+                bundle: AakronLeadBundle
+                name: recent_tasks_widget
+            description: This widget displays the most recent tasks

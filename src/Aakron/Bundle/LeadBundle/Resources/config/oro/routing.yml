@@ -1,0 +1,8 @@
+aakron_lead:
+    resource: "@AakronLeadBundle/Controller/"
+    type:     annotation
+    prefix:   /
+aakron_lead_parent_bundle:
+    resource: "@!OroSalesBundle/Controller"
+    type:     annotation
+    prefix:   /
