@@ -13,7 +13,8 @@
 	},
 	"require" : {
 		"oro/crm" : "2.6.*",
-		"oro/platform-serialised-fields" : "2.6.*",
+		"oplatform-club/platform": ">=2.5.1",
+		"oplatform-club/platform-serialised-fields" : ">=2.5.1",
 		"oro/crm-hangouts-call-bundle" : "2.6.*",
 		"oro/crm-abandoned-cart" : "2.6.*",
 		"oro/crm-magento-embedded-contact-us" : "2.6.*",
@@ -39,7 +40,7 @@
 		"sebastian/phpcpd" : "3.0.*",
 		"phpunit/phpcov" : "3.1.*",
 		"symfony/phpunit-bridge" : "3.2.*",
-		"friendsofphp/php-cs-fixer" : "2.1.*"
+		"friendsofphp/php-cs-fixer" : "*"
 	},
 	"config" : {
 		"platform" : {
